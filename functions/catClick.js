@@ -1,13 +1,4 @@
-// exports.handler = async (event, context) => {
-//   console.log("hit the cat backend");
-//   console.log("the cat event", event.httpMethod);
-//   return {
-//     statusCode: 200,
-//     body: JSON.stringify({
-//       message: "WELCOME!",
-//     }),
-//   };
-// };
+const axios = require("axios");
 
 exports.handler = async (event, context) => {
   console.log("clicked for cat");
@@ -19,10 +10,27 @@ exports.handler = async (event, context) => {
       }),
     };
   }
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: "WELCOME!",
-    }),
-  };
+  let img;
+
+  try {
+    const res = await axios({
+      method: "GET",
+      url: "https://api.thecatapi.com/v1/images/search",
+    });
+    img = res.data[0].url;
+    console.log("this is img", img);
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: `${img}`,
+      }),
+    };
+  } catch (err) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: `${err.message}`,
+      }),
+    };
+  }
 };
