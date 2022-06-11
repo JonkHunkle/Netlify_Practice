@@ -61,14 +61,14 @@ export default function Form() {
 
   return (
     <>
-      <Grid container spacing={10} height={"100vh"} alignContent={"center"}>
+      <Grid container spacing={5} p={12} height={"100vh"} width={"100vw"}>
         <Grid item xs={12}>
           {welcome}
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           I am keeping track of what you type: {firstName}
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <Input
             placeholder={""}
             value={firstName}
@@ -76,18 +76,44 @@ export default function Form() {
             onChange={handleChange}
           ></Input>
         </Grid>
-        <Grid item xs={12}>
-          <Button variant={"contained"} onClick={handleClick}>
-            press me for something cool
-          </Button>
+        <Grid item container xs={12}>
+          <Grid item xs={6}>
+            <Button
+              variant={"contained"}
+              style={{ width: "33vw" }}
+              onClick={handleClick}
+            >
+              touch me
+            </Button>
+          </Grid>
+
+          <Grid item xs={6}>
+            <Button
+              variant={"contained"}
+              style={{ width: "33vw" }}
+              onClick={catClick}
+            >
+              cat attack
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Button variant={"contained"} onClick={catClick}>
-            this is the cat button
-          </Button>
-        </Grid>
-        <Grid item id={"imgBox"} xs={6} justifyItems={"center"}>
-          <img id="catImg" src={imgSrc} alt="cat goes here" />
+        <Grid
+          container
+          pt={4}
+          width={"100vw"}
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Grid
+            item
+            id={"imgBox"}
+            xs={6}
+            style={{ height: "33vh", width: "33vw" }}
+            border={"2px solid black"}
+          >
+            <img id="catImg" src={imgSrc} width="150px" alt="cat goes here" />
+          </Grid>
         </Grid>
       </Grid>
     </>
