@@ -3,7 +3,7 @@ import { Grid, Input, Button } from "@mui/material";
 import axios from "axios";
 
 export default function Form() {
-  const [firstName, setFirstName] = useState(null);
+  const [firstName, setFirstName] = useState("");
   const [welcome, setWelcome] = useState("welcome! try typing something");
   const nameInput = document.getElementById("nameInput");
   let superSecret = "TEST";
@@ -12,17 +12,16 @@ export default function Form() {
   const handleChange = (e) => {
     setFirstName(e.target.value);
     setWelcome("");
+    console.log(e.target.value);
     e.preventDefault();
   };
 
-  //refactor to make this a serverless function with the .netlify/functions/catClick endpoint
-
   const catClick = () => {
     axios
-      .get("https://api.thecatapi.com/v1/images/search")
+      .get(".netlify/functions/catClick")
       .then((response) => {
-        console.log("this is the cat response's data", response.data);
-        const img = response.data[0].url;
+        console.log("this is the cat response's data", response);
+        const img = response.data.message;
         document.getElementById("catImg").src = img;
       })
       .catch((error) => {
@@ -42,8 +41,9 @@ export default function Form() {
         })
         .then(function (response) {
           // handle success
-          setFirstName(null);
-          nameInput.value = null;
+          setFirstName("");
+          setWelcome(`this is what you just input: ${firstName}!`);
+          // nameInput.value = null;
           console.log("the response", response);
         })
         .catch(function (error) {
@@ -53,7 +53,6 @@ export default function Form() {
         })
         .then(function () {
           // always executed
-          setWelcome(`this is what you just input: ${firstName}!`);
 
           console.log("clicked");
         });
@@ -71,7 +70,8 @@ export default function Form() {
         </Grid>
         <Grid item xs={6}>
           <Input
-            defaultValue={""}
+            placeholder={""}
+            value={firstName}
             id="nameInput"
             onChange={handleChange}
           ></Input>
