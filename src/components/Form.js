@@ -1,22 +1,20 @@
 import React, { useState } from "react";
 import { Grid, Input, Button } from "@mui/material";
+
 import axios from "axios";
+import AllCats from "./AllCats";
 
 export default function Form() {
-  const [firstName, setFirstName] = useState("");
-  const [welcome, setWelcome] = useState("welcome! try typing something");
-  const nameInput = document.getElementById("nameInput");
-  let superSecret = "TEST";
-  let imgSrc;
+  const [catName, setCatName] = useState("");
+  const [text, setText] = useState("");
 
   const handleChange = (e) => {
-    setFirstName(e.target.value);
-    setWelcome("");
-    console.log(e.target.value);
+    setText("You are typing something");
+    setCatName(e.target.value);
     e.preventDefault();
   };
-
   const catClick = () => {
+    setText("You clicked the cat button");
     axios
       .get(".netlify/functions/catClick")
       .then((response) => {
@@ -32,46 +30,35 @@ export default function Form() {
       });
   };
   const handleClick = () => {
-    if (!firstName) {
-      setWelcome("you forgot to put in something");
-    } else {
-      axios
-        .post(".netlify/functions/postClick", {
-          secret: superSecret,
-        })
-        .then(function (response) {
-          // handle success
-          setFirstName("");
-          setWelcome(`this is what you just input: ${firstName}!`);
-          // nameInput.value = null;
-          console.log("the response", response);
-        })
-        .catch(function (error) {
-          // handle error
+    setText("you clicked the clicky button!");
+  };
 
-          console.log("the error", error);
-        })
-        .then(function () {
-          // always executed
-
-          console.log("clicked");
-        });
-    }
+  const newCat = () => {
+    setText(`You called for another cat named ${catName}!`);
+    axios
+      .post(".netlify/functions/addCat", { name: catName })
+      .then((response) => {
+        console.log("this is the newCat response's data", response);
+      })
+      .catch((error) => {
+        console.log("this is the newCat error", error);
+      });
   };
 
   return (
     <>
       <Grid container spacing={5} p={12} height={"100vh"} width={"100vw"}>
         <Grid item xs={12}>
-          {welcome}
+          <p>Welcome to Cat-Call!</p>
+          <p>{text}</p>
         </Grid>
         <Grid item xs={12}>
-          I am keeping track of what you type: {firstName}
+          Enter a name to call your cat!
         </Grid>
         <Grid item xs={12}>
           <Input
-            placeholder={""}
-            value={firstName}
+            placeholder={"Input Your Cat's Name"}
+            value={catName}
             id="nameInput"
             onChange={handleChange}
           ></Input>
@@ -81,19 +68,27 @@ export default function Form() {
             <Button
               variant={"contained"}
               style={{ width: "33vw" }}
-              onClick={handleClick}
+              onClick={catClick}
             >
-              touch me
+              cat click
             </Button>
           </Grid>
-
           <Grid item xs={6}>
             <Button
               variant={"contained"}
               style={{ width: "33vw" }}
-              onClick={catClick}
+              onClick={handleClick}
             >
-              cat attack
+              handle click
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              variant={"contained"}
+              style={{ width: "33vw" }}
+              onClick={newCat}
+            >
+              new cat
             </Button>
           </Grid>
         </Grid>
@@ -112,7 +107,19 @@ export default function Form() {
             style={{ height: "33vh", width: "33vw" }}
             border={"2px solid black"}
           >
-            <img id="catImg" src={imgSrc} width="150px" alt="cat goes here" />
+            <img id="catImg" width="150px" alt="cat goes here" />
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          item
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <p>here are your cats!</p>
+          <Grid container item justifyContent="center" alignItems="center">
+            <AllCats />
           </Grid>
         </Grid>
       </Grid>

@@ -1,11 +1,9 @@
 import "./App.css";
-import Form from "./components/Form";
-import AllCats from "./components/AllCats";
+import Home from "./components/Home";
 function App() {
   return (
     <div className="App">
-      <Form />
-      <AllCats />
+      <Home />
     </div>
   );
 }
