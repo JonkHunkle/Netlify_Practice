@@ -1,7 +1,6 @@
 import React from "react";
 import { useQuery, gql } from "@apollo/client";
 import { Grid } from "@mui/material";
-
 const ALL_CATS = gql`
   query GetAllCats {
     cats {
