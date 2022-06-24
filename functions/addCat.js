@@ -1,35 +1,49 @@
 const axios = require("axios");
+const { parse } = require("graphql");
+const {
+  ApolloClient,
+  HttpLink,
+  ApolloLink,
+  InMemoryCache,
+} = require("@apollo/client");
+const fetch = require("cross-fetch");
 
 exports.handler = async (event, context) => {
+  const body = JSON.parse(event.body);
+  const name = body.name;
+
   try {
-    const data = JSON.parse(event.body);
-    if (!data.name || data.name === "") {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: `You didnt send a name`,
-        }),
-      };
-    }
-    const catUrl = await getRandomCat();
+    const client = new ApolloClient({
+      cache: new InMemoryCache(),
+      link: new HttpLink({
+        uri: "http://localhost:8080/v1/graphql",
+        fetch,
+      }),
+    });
+    await client.mutate({
+      mutation: parse(ADD_CAT),
+      variables: { name },
+    });
+
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        receivedData: { name: data.name, url: catUrl },
-      }),
+      body: JSON.stringify(body),
     };
   } catch (err) {
+    console.error(err.message);
     return {
       statusCode: 500,
       body: err.message,
     };
   }
 };
-const getRandomCat = async () => {
-  const res = await axios({
-    method: "GET",
-    url: "https://api.thecatapi.com/v1/images/search",
-  });
-  img = res.data[0].url;
-  return img;
-};
+
+const ADD_CAT = `
+  mutation addNewCat($name: String!, $url: String) {
+    insert_cats_one(object: { name: $name, url: $url }) {
+      name
+      id
+      url
+    }
+  }
+`;

@@ -2,62 +2,11 @@ import React, { useState } from "react";
 import { Grid, Input, Button } from "@mui/material";
 import axios from "axios";
 import AllCats from "./AllCats";
-import { useMutation, gql } from "@apollo/client";
-
-const ALL_CATS = gql`
-  query GetAllCats {
-    cats {
-      name
-      id
-      url
-    }
-  }
-`;
-const ADD_CAT = gql`
-  mutation addNewCat($name: String!, $url: String!) {
-    insert_cats_one(object: { name: $name, url: $url }) {
-      name
-      id
-      url
-    }
-  }
-`;
 
 export default function Form() {
   const [catName, setCatName] = useState("");
   const [hasCat, setHasCat] = useState(null);
   const [catPic, setCatPic] = useState("");
-  const [addNewCat] = useMutation(ADD_CAT, {
-    update(cache, { data }) {
-      const { cats } = cache.readQuery({
-        query: ALL_CATS,
-      });
-      cache.writeQuery({
-        query: ALL_CATS,
-        data: {
-          cats: [...cats, data.insert_cats_one],
-        },
-      });
-      // i kind of get this but....
-      cache.modify({
-        fields: {
-          allCats(existingCats = []) {
-            const newCatRef = cache.writeFragment({
-              data: addNewCat,
-              fragment: gql`
-                fragment newCat on  {
-                  name
-                  id
-                  url
-                }
-              `,
-            });
-            return [...existingCats, newCatRef];
-          },
-        },
-      });
-    },
-  });
 
   const catClick = () => {
     axios
@@ -80,15 +29,13 @@ export default function Form() {
   const newCat = () => {
     axios
       .post(".netlify/functions/addCat", { name: catName })
-      .then((response) => {
-        console.log(
-          "this is the newCat response's data",
-          response.data.receivedData
-        );
-        const res = response.data.receivedData;
-        addNewCat({
-          variables: { name: res.name, url: res.url },
-        });
+      .then(async (response) => {
+        console.log("this is the newCat response's data", response);
+        // const res = await addNewCat(name);
+        // console.log(
+        //   "Updated the cat record with Apollo: ",
+        //   JSON.stringify(res.data, null, 2)
+        // );
         setCatName("");
       })
       .catch((error) => {

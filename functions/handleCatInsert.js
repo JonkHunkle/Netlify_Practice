@@ -9,16 +9,17 @@ const {
 const fetch = require("cross-fetch");
 
 exports.handler = async (event, context) => {
+  console.log("in handleCatInsert");
   try {
     const body = JSON.parse(event.body);
     console.log("New cat record inserted", JSON.stringify(body, null, 2));
-
-    const catUrl = await getRandomCat();
 
     const { event: hasuraEvent } = body;
     const { data } = hasuraEvent;
     const { new: newRecord } = data;
     const { id } = newRecord;
+
+    const catUrl = await getRandomCat();
 
     console.log("Got a random cat url to use: ", catUrl);
 
@@ -29,15 +30,9 @@ exports.handler = async (event, context) => {
       JSON.stringify(res.data, null, 2)
     );
 
-    const resAxios = await updateCatUrlWithAxios(id, catUrl);
-    console.log(
-      "Updated the cat record with Axios: ",
-      JSON.stringify(resAxios.data, null, 2)
-    );
-
     return {
       statusCode: 200,
-      body: JSON.stringify(body),
+      body: JSON.stringify(res),
     };
   } catch (err) {
     console.error(err.message);
@@ -58,6 +53,7 @@ const getRandomCat = async () => {
 };
 
 const updateCatUrl = async (id, url) => {
+  console.log("this is the update function", id, url);
   try {
     const client = new ApolloClient({
       cache: new InMemoryCache(),
